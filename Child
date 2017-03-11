@@ -1,0 +1,43 @@
+#include <windows.h>
+#include <iostream>
+#include"CreateFiles.h"
+#include"Product.h"
+using namespace std;
+volatile HANDLE hInEvent;
+int main()
+{
+	MySpace s;
+	char c;
+	hInEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, L"InEventName");
+	if (hInEvent == NULL)
+	{
+		cout << "Open event failed." << endl;
+		cout << "Input any char to exit." << endl;
+		cin >> c;
+		return GetLastError();
+	}
+	setlocale(LC_ALL, "Russian");
+	s.askManToPutMoney();
+	// устанавливаем событие о вводе символа
+	Sleep(1000);
+	SetEvent(hInEvent);
+	ResetEvent(hInEvent);
+	DWORD dwWaitResult = WaitForSingleObject(hInEvent, INFINITE);
+	ResetEvent(hInEvent);
+	s.askManToEnterProducts();
+	Sleep(2000);
+	SetEvent(hInEvent);
+	ResetEvent(hInEvent);
+	dwWaitResult = WaitForSingleObject(hInEvent, INFINITE);
+	ResetEvent(hInEvent);
+	Sleep(500);
+	s.showPurchases();
+	Sleep(10000);
+	SetEvent(hInEvent);
+	ResetEvent(hInEvent);
+	dwWaitResult = WaitForSingleObject(hInEvent, INFINITE);
+	// закрываем дескриптор события в текущем процессе
+	CloseHandle(hInEvent);
+
+	return 0;
+}
