@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <iostream>
+#include<WinBase.h>
 #include"CreateFiles.h"
 #include"Product.h"
 using namespace std;
@@ -8,7 +9,7 @@ int main()
 {
 	MySpace s;
 	char c;
-	hInEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, L"InEventName");
+	hInEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"InEventName");
 	if (hInEvent == NULL)
 	{
 		cout << "Open event failed." << endl;
@@ -18,25 +19,18 @@ int main()
 	}
 	setlocale(LC_ALL, "Russian");
 	s.askManToPutMoney();
-	// ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð¾ Ð²Ð²Ð¾Ð´Ðµ ÑÐ¸Ð¼Ð²Ð¾Ð»Ð°
-	Sleep(1000);
-	SetEvent(hInEvent);
-	ResetEvent(hInEvent);
+	// óñòàíàâëèâàåì ñîáûòèå î ââîäå ñèìâîëà
+	PulseEvent(hInEvent);
 	DWORD dwWaitResult = WaitForSingleObject(hInEvent, INFINITE);
-	ResetEvent(hInEvent);
+
 	s.askManToEnterProducts();
-	Sleep(2000);
-	SetEvent(hInEvent);
-	ResetEvent(hInEvent);
+	PulseEvent(hInEvent);
 	dwWaitResult = WaitForSingleObject(hInEvent, INFINITE);
-	ResetEvent(hInEvent);
-	Sleep(500);
+
 	s.showPurchases();
-	Sleep(10000);
-	SetEvent(hInEvent);
-	ResetEvent(hInEvent);
+	PulseEvent(hInEvent);
 	dwWaitResult = WaitForSingleObject(hInEvent, INFINITE);
-	// Ð·Ð°ÐºÑ€Ñ‹Ð²Ð°ÐµÐ¼ Ð´ÐµÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ñ€ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ Ð² Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼ Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐµ
+	// çàêðûâàåì äåñêðèïòîð ñîáûòèÿ â òåêóùåì ïðîöåññå
 	CloseHandle(hInEvent);
 
 	return 0;
